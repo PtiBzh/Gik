@@ -1,9 +1,10 @@
 use chrono::{NaiveDate, DateTime, Utc};
 use serde::{Serialize, Deserialize};
+use sqlx::FromRow;
 
 // ==================== GILET ====================
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Gilet {
     pub id: i64,
     pub num_serie: String,
@@ -36,7 +37,7 @@ pub struct UpdateGilet {
 
 // ==================== TEST FLOTTABILITE ====================
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct TestFlottabilite {
     pub id: i64,
     pub gilet_id: i64,

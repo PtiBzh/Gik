@@ -10,8 +10,8 @@ actix-files = "0.6"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
-# SQLite with bundled sqlite3
-rusqlite = { version = "0.30", features = ["bundled", "chrono"] }
+# SQLite async with sqlx
+sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio", "chrono"] }
 
 # Chrono for date handling
 chrono = { version = "0.4", features = ["serde"] }

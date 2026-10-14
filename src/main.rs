@@ -2,7 +2,9 @@ use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{web, App, HttpServer};
 use dotenvy::dotenv;
+use sqlx::sqlite::SqlitePool;
 use std::env;
+use std::sync::Arc;
 
 mod db;
 mod models;
@@ -17,12 +19,13 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
     // Initialize database
-    let db_path = env::var("DATABASE_URL").unwrap_or_else(|_| "gik.db".to_string());
-    init_db(&db_path).expect("Failed to initialize database");
+    let db_url = env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite:gik.db".to_string());
+    let pool = init_db(&db_url).await.expect("Failed to initialize database");
+    let pool = Arc::new(pool);
 
-    println!("🚀 Démarrage du serveur GIK Backend...");
-    println!("📍 Accès : http://localhost:8080");
-    println!("📊 API : http://localhost:8080/api");
+    println!("Démarrage du serveur GIK Backend...");
+    println!("Accès : http://localhost:8080");
+    println!("API : http://localhost:8080/api");
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -31,9 +34,11 @@ async fn main() -> std::io::Result<()> {
             .allow_any_header()
             .max_age(3600);
 
+        let pool = Arc::clone(&pool);
+        
         App::new()
             .wrap(cors)
-            .app_data(web::Data::new(db_path.clone()))
+            .app_data(web::Data::new(pool))
             .service(
                 web::scope("/api")
                     .configure(gilets::configure)
@@ -42,7 +47,7 @@ async fn main() -> std::io::Result<()> {
             // Serve static files
             .service(fs::Files::new("/", "static/").index_file("index.html"))
             .service(
-                web::resource("/health").to(|| async { "✅ Server is running" }),
+                web::resource("/health").to(|| async { "Server is running" }),
             )
     })
     .bind("0.0.0.0:8080")?

@@ -1,4 +1,6 @@
 use actix_web::{web, HttpResponse, Responder};
+use sqlx::sqlite::SqlitePool;
+use std::sync::Arc;
 
 use crate::models::{ApiResponse, NewTestFlottabilite, TestFlottabilite, UpdateTestFlottabilite};
 use crate::db::*;
@@ -15,38 +17,23 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
     );
 }
 
-pub async fn get_all(db_path: web::Data<String>) -> impl Responder {
-    let conn = match get_connection(&db_path) {
-        Ok(c) => c,
-        Err(e) => return HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("DB error: {}", e))),
-    };
-
-    match get_all_tests(&conn) {
+pub async fn get_all(pool: web::Data<Arc<SqlitePool>>) -> impl Responder {
+    match get_all_tests(&pool).await {
         Ok(tests) => HttpResponse::Ok().json(ApiResponse::success(tests)),
         Err(e) => HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("Error: {}", e))),
     }
 }
 
-pub async fn get_by_id(id: web::Path<i64>, db_path: web::Data<String>) -> impl Responder {
-    let conn = match get_connection(&db_path) {
-        Ok(c) => c,
-        Err(e) => return HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("DB error: {}", e))),
-    };
-
-    match get_test_by_id(&conn, id.into_inner()) {
+pub async fn get_by_id(id: web::Path<i64>, pool: web::Data<Arc<SqlitePool>>) -> impl Responder {
+    match get_test_by_id(&pool, id.into_inner()).await {
         Ok(Some(test)) => HttpResponse::Ok().json(ApiResponse::success(test)),
         Ok(None) => HttpResponse::NotFound().json(ApiResponse::<()>::error("Test non trouvé".to_string())),
         Err(e) => HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("Error: {}", e))),
     }
 }
 
-pub async fn create(test: web::Json<NewTestFlottabilite>, db_path: web::Data<String>) -> impl Responder {
-    let conn = match get_connection(&db_path) {
-        Ok(c) => c,
-        Err(e) => return HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("DB error: {}", e))),
-    };
-
-    match create_test(&conn, &test) {
+pub async fn create(test: web::Json<NewTestFlottabilite>, pool: web::Data<Arc<SqlitePool>>) -> impl Responder {
+    match create_test(&pool, &test).await {
         Ok(new_test) => HttpResponse::Created().json(ApiResponse::success(new_test)),
         Err(e) => HttpResponse::BadRequest().json(ApiResponse::<()>::error(format!("Error: {}", e))),
     }
@@ -55,40 +42,25 @@ pub async fn create(test: web::Json<NewTestFlottabilite>, db_path: web::Data<Str
 pub async fn update(
     id: web::Path<i64>,
     test: web::Json<UpdateTestFlottabilite>,
-    db_path: web::Data<String>,
+    pool: web::Data<Arc<SqlitePool>>,
 ) -> impl Responder {
-    let conn = match get_connection(&db_path) {
-        Ok(c) => c,
-        Err(e) => return HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("DB error: {}", e))),
-    };
-
-    match update_test(&conn, id.into_inner(), &test) {
+    match update_test(&pool, id.into_inner(), &test).await {
         Ok(Some(updated)) => HttpResponse::Ok().json(ApiResponse::success(updated)),
         Ok(None) => HttpResponse::NotFound().json(ApiResponse::<()>::error("Test non trouvé".to_string())),
         Err(e) => HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("Error: {}", e))),
     }
 }
 
-pub async fn delete(id: web::Path<i64>, db_path: web::Data<String>) -> impl Responder {
-    let conn = match get_connection(&db_path) {
-        Ok(c) => c,
-        Err(e) => return HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("DB error: {}", e))),
-    };
-
-    match delete_test(&conn, id.into_inner()) {
+pub async fn delete(id: web::Path<i64>, pool: web::Data<Arc<SqlitePool>>) -> impl Responder {
+    match delete_test(&pool, id.into_inner()).await {
         Ok(true) => HttpResponse::Ok().json(ApiResponse::<()>::message("Test supprimé avec succès".to_string())),
         Ok(false) => HttpResponse::NotFound().json(ApiResponse::<()>::error("Test non trouvé".to_string())),
         Err(e) => HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("Error: {}", e))),
     }
 }
 
-pub async fn get_by_gilet(gilet_id: web::Path<i64>, db_path: web::Data<String>) -> impl Responder {
-    let conn = match get_connection(&db_path) {
-        Ok(c) => c,
-        Err(e) => return HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("DB error: {}", e))),
-    };
-
-    match get_tests_by_gilet(&conn, gilet_id.into_inner()) {
+pub async fn get_by_gilet(gilet_id: web::Path<i64>, pool: web::Data<Arc<SqlitePool>>) -> impl Responder {
+    match get_tests_by_gilet(&pool, gilet_id.into_inner()).await {
         Ok(tests) => HttpResponse::Ok().json(ApiResponse::success(tests)),
         Err(e) => HttpResponse::InternalServerError().json(ApiResponse::<()>::error(format!("Error: {}", e))),
     }
