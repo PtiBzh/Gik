@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0D47A1</color>
+    <color name="colorPrimaryDark">#001970</color>
+    <color name="colorAccent">#FF5722</color>
+    <color name="colorBackground">#F5F5F5</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnSurface">#000000</color>
+    <color name="colorError">#D32F2F</color>
+    <color name="colorOnError">#FFFFFF</color>
+    
+    <!-- Verdict colors -->
+    <color name="verdictConforme">#4CAF50</color>
+    <color name="verdictNonConforme">#F44336</color>
+    <color name="verdictWarning">#FF9800</color>
+    
+    <!-- Text colors for high contrast -->
+    <color name="textPrimary">#000000</color>
+    <color name="textSecondary">#757575</color>
+    <color name="textOnLight">#FFFFFF</color>
+    <color name="textOnDark">#000000</color>
+    
+    <!-- Button colors -->
+    <color name="buttonPrimary">#1976D2</color>
+    <color name="buttonSecondary">#9E9E9E</color>
+    <color name="buttonSuccess">#4CAF50</color>
+    <color name="buttonDanger">#F44336</color>
+    
+    <!-- Border colors -->
+    <color name="borderLight">#E0E0E0</color>
+    <color name="borderDark">#757575</color>
+</resources>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Test gilets</string>
+    
+    <!-- Main Activity -->
+    <string name="gilet_number_hint">N° du gilet</string>
+    <string name="scan_button">Scanner</string>
+    <string name="lecture_hint">Lecture peson (kg)</string>
+    <string name="validate_button">Valider</string>
+    <string name="cancel_last_test">Annuler le dernier test</string>
+    <string name="hors_liste_button">Hors liste</string>
+    
+    <!-- Verdict -->
+    <string name="verdict_conforme">Conforme</string>
+    <string name="verdict_non_conforme_flottabilite">Non conforme (flottabilité)</string>
+    <string name="verdict_coule_hs">Coule — HS</string>
+    <string name="verdict_flotte_hs">Flotte — HS</string>
+    <string name="verdict_visuel_hs">Visuel HS</string>
+    <string name="verdict_a_verifier">À vérifier (seuil inconnu)</string>
+    
+    <!-- Session Activity -->
+    <string name="session_title">Session de test</string>
+    <string name="testes_count">Testés: %d</string>
+    <string name="conformes_count">Conformes: %d</string>
+    <string name="hs_count">HS: %d</string>
+    <string name="hors_liste_count">Hors liste: %d</string>
+    <string name="export_csv">Export CSV</string>
+    <string name="delete_all_tests">Tout effacer</string>
+    <string name="delete_all_confirmation">Voulez-vous vraiment effacer tous les tests ?</string>
+    
+    <!-- Settings Activity -->
+    <string name="settings_title">Réglages</string>
+    <string name="measurement_mode_title">Mode de mesure</string>
+    <string name="banc_poulie">Banc poulie</string>
+    <string name="ancien_protocole">Ancien protocole</string>
+    <string name="lest_value_title">Valeur du champ Lest (kg)</string>
+    <string name="import_campaign">Importer la feuille de campagne</string>
+    
+    <!-- Dialogs -->
+    <string name="dialog_confirm">Confirmer</string>
+    <string name="dialog_cancel">Annuler</string>
+    <string name="dialog_yes">Oui</string>
+    <string name="dialog_no">Non</string>
+    
+    <!-- Errors -->
+    <string name="error_gilet_not_found">Gilet introuvable</string>
+    <string name="error_invalid_lecture">Lecture invalide</string>
+    <string name="error_manual_seuil_required">Veuillez indiquer le seuil nominal</string>
+    <string name="error_csv_parse">Erreur de parsing du CSV</string>
+    <string name="error_csv_import">Erreur d\'import du CSV</string>
+    
+    <!-- Success -->
+    <string name="success_tests_imported">%d gilets importés</string>
+    <string name="success_test_saved">Test enregistré</string>
+    
+    <!-- Actions -->
+    <string name="action_retry">Réessayer</string>
+    <string name="action_continue">Continuer</string>
+    
+    <!-- Units -->
+    <string name="unit_kg">kg</string>
+    <string name="unit_n">N</string>
+</resources>

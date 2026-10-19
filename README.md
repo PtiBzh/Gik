@@ -1,179 +1,225 @@
-# GIK - Gestion des Tests de Flottabilité des Gilets
+# Test gilets CNPA
 
-Une application web complète pour gérer le suivi des tests de flottabilité des gilets pour une école de voile.
+Application Android native pour le test des gilets de flottabilité du Club Nautique de Lesconil (CNPA).
 
-## 🚀 Fonctionnalités
+## Contexte
 
-### Backend (Rust + Actix-web + SQLite)
-- **Gestion des gilets** : CRUD complet (Créer, Lire, Mettre à jour, Supprimer)
-- **Gestion des tests** : Enregistrement des tests de flottabilité avec résultat (OK/KO)
-- **Historique** : Visualisation de tous les tests associés à un gilet
-- **Recherche** : Recherche des gilets par numéro de série, modèle, taille ou état
-- **Statistiques** : Tableau de bord avec indicateurs clés
+Chaque hiver, environ 230 gilets de flottabilité en mousse sont testés individuellement au bac d'eau par une seule personne, en une session, en conditions humides. Cette application remplace le flux actuel (saisie sur tableau Véléda → photo → retranscription CSV) par une saisie directe sur smartphone Android, hors ligne.
 
-### Frontend (HTML/CSS/JS)
-- Interface moderne et réactive
-- Navigation par onglets
-- Formulaires de création/modification
-- Notifications toast
-- Design responsive (mobile-friendly)
+## Fonctionnalités
 
-## 📁 Structure du projet
+- **Saisie rapide** : Scan de code-barres ou saisie manuelle du numéro de gilet
+- **Reconnaissance intelligente** : Recherche dans la feuille de campagne embarquée avec normalisation des ID
+- **Calcul automatique** : Calcul de la flottabilité et du verdict selon le mode de mesure
+- **Verdict clair** : Affichage plein écran avec couleur, texte et vibration
+- **Gestion de session** : Liste des tests, export CSV, statistiques
+- **100% hors ligne** : Aucune connexion réseau requise
+- **Mode avion compatible** : Fonctionne entièrement sans réseau
 
-```
-gik_backend/
-├── Cargo.toml                 # Dépendances Rust
-├── Dockerfile                 # Configuration Docker
-├── docker-compose.yml         # Orchestration Docker
-├── .env                       # Variables d'environnement
-├── .gitignore
-├── README.md
-├── src/
-│   ├── main.rs                # Point d'entrée
-│   ├── db.rs                  # Logique base de données (SQLite)
-│   ├── models.rs              # Modèles de données
-│   ├── routes/
-│   │   ├── mod.rs             # Module des routes
-│   │   ├── gilets.rs          # Routes pour les gilets
-│   │   └── tests.rs           # Routes pour les tests
-│   └── utils.rs               # Fonctions utilitaires
-└── static/
-    ├── index.html             # Page principale
-    ├── css/
-    │   └── style.css          # Styles CSS
-    └── js/
-        └── app.js              # Logique frontend
-```
+## Prérequis
 
-## 🛠️ Prérequis
+- Android Studio (version 2023.2 ou supérieure)
+- SDK Android 34
+- Java JDK 17
+- Appareil Android avec API 26+ (Android 8+)
 
-- [Rust](https://www.rust-lang.org/tools/install) 1.70+
-- [Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html)
-- [Docker](https://docs.docker.com/get-docker/) (optionnel, pour le déploiement)
+## Installation
 
-## 🏃‍♂️ Installation et exécution
-
-### Méthode 1: Exécution locale (sans Docker)
+### 1. Cloner le projet
 
 ```bash
-# Cloner le dépôt
 git clone https://github.com/PtiBzh/Gik.git
 cd Gik
-
-# Construire et exécuter
-cargo run
 ```
 
-L'application sera disponible à l'adresse : http://localhost:8080
+### 2. Configurer le SDK Android
 
-### Méthode 2: Avec Docker
+Assurez-vous d'avoir installé le SDK Android 34 via le SDK Manager d'Android Studio.
+
+### 3. Builder l'APK
 
 ```bash
-# Construire et démarrer le conteneur
-docker-compose up -d --build
+# APK de debug
+./gradlew assembleDebug
 
-# Arrêter le conteneur
-docker-compose down
+# APK de release
+./gradlew assembleRelease
 ```
 
-L'application sera disponible à l'adresse : http://localhost:8080
+L'APK sera générée dans `app/build/outputs/apk/`.
 
-## 📡 API REST
+### 4. Installer sur un appareil
 
-### Base URL: `/api`
+```bash
+# Installer l'APK debug
+adb install app/build/outputs/apk/debug/app-debug.apk
+```
 
-### Gilets
-- **GET** `/api/gilets` - Liste de tous les gilets
-- **GET** `/api/gilets/{id}` - Détails d'un gilet
-- **POST** `/api/gilets` - Créer un gilet
-- **PUT** `/api/gilets/{id}` - Mettre à jour un gilet
-- **DELETE** `/api/gilets/{id}` - Supprimer un gilet
-- **GET** `/api/gilets/search?field={field}&value={value}` - Rechercher des gilets
+## Structure du projet
 
-### Tests
-- **GET** `/api/tests` - Liste de tous les tests
-- **GET** `/api/tests/{id}` - Détails d'un test
-- **POST** `/api/tests` - Créer un test
-- **PUT** `/api/tests/{id}` - Mettre à jour un test
-- **DELETE** `/api/tests/{id}` - Supprimer un test
-- **GET** `/api/tests/by-gilet/{gilet_id}` - Tests d'un gilet spécifique
+```
+app/
+├── src/
+│   ├── main/
+│   │   ├── java/fr/ydel/gilets/
+│   │   │   ├── data/           # Modèles et accès aux données
+│   │   │   ├── ui/             # Activités et adaptateurs
+│   │   │   ├── util/           # Classes utilitaires
+│   │   │   ├── viewmodel/      # ViewModels
+│   │   │   └── TestGiletsApp.kt # Application
+│   │   ├── res/               # Ressources
+│   │   │   ├── layout/         # Layouts XML
+│   │   │   ├── values/         # Strings, colors, styles
+│   │   │   └── assets/         # Fichiers d'actifs (CSV)
+│   │   └── AndroidManifest.xml
+│   └── test/                  # Tests unitaires
+└── build.gradle.kts            # Configuration Gradle
+```
 
-## 📊 Modèles de données
+## Fichier de campagne
 
-### Gilet
-```json
-{
-  "id": 1,
-  "num_serie": "GIK-2024-001",
-  "modele": "Mustang Survival",
-  "taille": "M",
-  "date_achat": "2024-01-15",
-  "etat": "Bon",
-  "dernier_test": "2024-06-01"
+### Format CSV
+
+Le fichier de campagne doit être au format CSV avec les colonnes suivantes (séparateur `;`):
+
+```csv
+Modèle;ID canonique;ID club;Test;Lest;Flotta (N);Constat
+Gilet Adulte;FAB001;23-001;;;200,0;
+Gilet Adulte;FAB002;23-002;;;200,0;
+```
+
+**Colonnes:**
+1. Modèle : Nom du modèle de gilet
+2. ID canonique : Identifiant fabricant
+3. ID club : Identifiant interne du club (ex: "23-001")
+4. Test : (optionnel) Information de test
+5. Lest : (optionnel) Valeur du lest en kg
+6. **Flotta (N)** : **Seuil de flottabilité nominale en Newtons** (requis)
+7. Constat : (optionnel) Constat initial
+
+### Intégration par défaut
+
+Le fichier `campagne-gilets-2026.csv` est intégré en tant qu'asset. Pour le mettre à jour:
+
+1. Placer le fichier CSV dans `app/src/main/assets/`
+2. Rebuild l'application
+
+### Import à chaud
+
+Depuis l'écran des réglages, vous pouvez importer un nouveau fichier de campagne via le sélecteur de fichiers Android. Les tests déjà enregistrés dans la session sont conservés.
+
+## Modes de mesure
+
+### Banc poulie (défaut)
+La flottabilité est lue directement :
+```
+Flottabilité (N) = lecture_kg × 9,8
+```
+
+### Ancien protocole
+La flottabilité est calculée à partir du lest :
+```
+Flottabilité (N) = (lest_kg − lecture_kg) × 9,8
+```
+
+## Verdicts
+
+- **Conforme** : flottabilité ≥ seuil nominal
+- **Non conforme (flottabilité)** : flottabilité < seuil nominal
+- **Non conforme (visuel)** : détection visuelle sans mesure
+- **À vérifier (seuil inconnu)** : gilet hors liste sans seuil manuel
+
+## Export CSV
+
+Le format d'export respect les colonnes des campagnes :
+
+```csv
+Modèle;ID canonique;ID club;Test (Visu ou ×100g);Lest (×100g);Flotta (N);Flotta évaluée N;Δ (N);Constat;Horodatage
+```
+
+- `Test` : lecture en hectogrammes (kg × 100, arrondi) ou `-` si sans lecture
+- `Lest` : 110 (hectogrammes) en mode ancien, vide en mode poulie
+- `Flotta évaluée N` : flottabilité calculée
+- `Δ (N)` : différence par rapport au seuil
+- `Horodatage` : format `AAAA-MM-JJ hh:mm:ss`
+
+## Configuration
+
+### Identifiant d'application
+- **ID** : `fr.ydel.gilets`
+- **Nom** : "Test gilets"
+
+### Permissions
+- `CAMERA` : Pour le scan des codes-barres
+- `VIBRATE` : Pour les retours haptiques
+
+### Keystore de release
+
+Pour générer un keystore de release :
+
+```bash
+keytool -genkey -v -keystore release.keystore -alias gilets -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Placer le fichier `release.keystore` dans le répertoire `app/` et configurer le `app/build.gradle.kts` :
+
+```kotlin
+android {
+    signingConfigs {
+        release {
+            storeFile = file("release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = "gilets"
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
 }
 ```
 
-### Test de Flottabilité
-```json
-{
-  "id": 1,
-  "gilet_id": 1,
-  "date_test": "2024-06-01",
-  "resultat": "OK",
-  "commentaire": "Test effectué dans de bonnes conditions",
-  "responsable": "Jean Dupont"
-}
+## Tests
+
+Exécuter les tests unitaires :
+
+```bash
+./gradlew test
 ```
 
-## 🎨 Captures d'écran
+Les tests couvrent :
+- Calcul des verdicts selon les règles métier
+- Parsing et validation du CSV
+- Export CSV
+- Normalisation des ID
 
-L'application propose une interface moderne avec :
-- Un tableau de bord avec onglets
-- Des tableaux de données avec recherche
-- Des formulaires modaux pour l'ajout/modification
-- Un tableau de bord de statistiques
+## Compatibilité
 
-## 🔧 Configuration
+- **Min SDK** : Android 8 (API 26)
+- **Target SDK** : Android 14 (API 34)
+- **Appareil testé** : Crosscall Core-Z5 (Android 12-14)
 
-### Variables d'environnement
+## Contribution
 
-Créer un fichier `.env` à la racine :
+Le projet est FOSS-ready. Pour contribuer :
 
-```env
-DATABASE_URL=gik.db
-RUST_LOG=actix_web=info
-```
+1. Forker le dépôt
+2. Créer une branche de fonctionnalité
+3. Commiter vos modifications
+4. Ouvrir une Pull Request
 
-### Déploiement
+## Licence
 
-Pour un déploiement en production :
+Le projet utilise des dépendances libres (Apache-2.0, MIT). Le code est prêt pour une publication sur F-Droid.
 
-1. **Construire l'image Docker** :
-   ```bash
-   docker build -t gik_backend .
-   ```
+## Auteurs
 
-2. **Exécuter le conteneur** :
-   ```bash
-   docker run -d -p 8080:8080 -v ./data:/usr/src/gik_backend/data gik_backend
-   ```
+Développé pour le Club Nautique de Lesconil (CNPA).
 
-3. **Avec Docker Compose** :
-   ```bash
-   docker-compose up -d
-   ```
+## Remerciements
 
-## 📝 Historique des versions
-
-- **v0.1.0** : Version initiale avec gestion des gilets et tests
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à :
-- Signaler des bugs
-- Proposer des améliorations
-- Envoyer des pull requests
-
-## 📄 Licence
-
-MIT License
+- zxing-android-embedded pour le scan de codes-barres
+- Android Jetpack pour l'architecture
+- Room pour la persistance locale

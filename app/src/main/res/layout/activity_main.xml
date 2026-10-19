@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:padding="@dimen/spacing_medium">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/mainContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Gilet ID Section -->
+            <TextView
+                android:id="@+id/giletLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/gilet_number_hint"
+                android:textSize="@dimen/text_medium"
+                android:textColor="@color/textPrimary"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:layout_marginBottom="@dimen/spacing_small" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/giletInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_field_height"
+                android:hint="@string/gilet_number_hint"
+                style="@style/Widget.TestGilets.TextInputLayout"
+                app:boxCornerRadiusTopStart="@dimen/card_corner_radius"
+                app:boxCornerRadiusTopEnd="@dimen/card_corner_radius"
+                app:boxCornerRadiusBottomStart="@dimen/card_corner_radius"
+                app:boxCornerRadiusBottomEnd="@dimen/card_corner_radius">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/giletInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="text"
+                    android:textSize="@dimen/input_text_size"
+                    android:imeOptions="actionNext" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Suggestions -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/suggestionsRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="200dp"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <Button
+                android:id="@+id/scanButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_min_height"
+                android:text="@string/scan_button"
+                style="@style/Widget.TestGilets.Button.Primary"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <!-- Gilet Info Section -->
+            <LinearLayout
+                android:id="@+id/giletInfoContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/colorSurface"
+                android:padding="@dimen/card_padding"
+                android:layout_marginTop="@dimen/spacing_medium"
+                app:cardCornerRadius="@dimen/card_corner_radius"
+                app:cardElevation="@dimen/card_elevation"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/giletModele"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_medium"
+                    android:textColor="@color/textPrimary"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/giletId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/textSecondary"
+                    android:layout_marginTop="@dimen/spacing_small" />
+
+                <TextView
+                    android:id="@+id/giletSeuil"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_medium"
+                    android:textColor="@color/textPrimary"
+                    android:layout_marginTop="@dimen/spacing_small" />
+
+                <TextView
+                    android:id="@+id/alreadyTestedWarning"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Re-test enregistré"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/verdictWarning"
+                    android:layout_marginTop="@dimen/spacing_small"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Lecture Section -->
+            <TextView
+                android:id="@+id/lectureLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lecture peson (kg)"
+                android:textSize="@dimen/text_medium"
+                android:textColor="@color/textPrimary"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:layout_marginBottom="@dimen/spacing_small" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/lectureInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_field_height"
+                android:hint="@string/lecture_hint"
+                style="@style/Widget.TestGilets.TextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/lectureInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="numberDecimal"
+                    android:textSize="@dimen/input_text_size"
+                    android:imeOptions="actionDone" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/validateButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_min_height"
+                android:text="@string/validate_button"
+                style="@style/Widget.TestGilets.Button.Primary"
+                android:layout_marginTop="@dimen/spacing_medium" />
+
+            <!-- Quick Actions -->
+            <LinearLayout
+                android:id="@+id/quickActionsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/couleHsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_small_min_height"
+                    android:layout_weight="1"
+                    android:text="@string/verdict_coule_hs"
+                    style="@style/Widget.TestGilets.Button.Danger"
+                    android:layout_marginEnd="@dimen/spacing_small" />
+
+                <Button
+                    android:id="@+id/flotteHsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_small_min_height"
+                    android:layout_weight="1"
+                    android:text="@string/verdict_flotte_hs"
+                    style="@style/Widget.TestGilets.Button.Danger"
+                    android:layout_marginStart="@dimen/spacing_small"
+                    android:layout_marginEnd="@dimen/spacing_small" />
+
+                <Button
+                    android:id="@+id/visuelHsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_small_min_height"
+                    android:layout_weight="1"
+                    android:text="@string/verdict_visuel_hs"
+                    style="@style/Widget.TestGilets.Button.Danger"
+                    android:layout_marginStart="@dimen/spacing_small" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/cancelLastButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_small_min_height"
+                android:text="@string/cancel_last_test"
+                style="@style/Widget.TestGilets.Button.Secondary"
+                android:layout_marginTop="@dimen/spacing_medium" />
+
+            <Button
+                android:id="@+id/sessionButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_small_min_height"
+                android:text="Session"
+                style="@style/Widget.TestGilets.Button.Secondary"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <Button
+                android:id="@+id/settingsButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_small_min_height"
+                android:text="Réglages"
+                style="@style/Widget.TestGilets.Button.Secondary"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:layout_marginBottom="@dimen/spacing_medium" />
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

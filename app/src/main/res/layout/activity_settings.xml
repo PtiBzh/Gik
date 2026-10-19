@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorBackground"
+    android:padding="@dimen/spacing_medium">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_title"
+        android:textSize="@dimen/text_large"
+        android:textColor="@color/textPrimary"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/spacing_large" />
+
+    <!-- Measurement Mode -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/measurement_mode_title"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@color/textPrimary"
+        android:textStyle="bold"
+        android:layout_marginBottom="@dimen/spacing_small" />
+
+    <RadioGroup
+        android:id="@+id/measurementModeGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/spacing_medium">
+
+        <RadioButton
+            android:id="@+id/bancPoulieRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/banc_poulie"
+            android:textSize="@dimen/text_medium"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/ancienProtocoleRadio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ancien_protocole"
+            android:textSize="@dimen/text_medium" />
+    </RadioGroup>
+
+    <!-- Lest Value -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lest_value_title"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@color/textPrimary"
+        android:textStyle="bold"
+        android:layout_marginBottom="@dimen/spacing_small" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lestInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/input_field_height"
+        android:hint="Valeur en kg"
+        style="@style/Widget.TestGilets.TextInputLayout"
+        app:boxCornerRadiusTopStart="@dimen/card_corner_radius"
+        app:boxCornerRadiusTopEnd="@dimen/card_corner_radius"
+        app:boxCornerRadiusBottomStart="@dimen/card_corner_radius"
+        app:boxCornerRadiusBottomEnd="@dimen/card_corner_radius">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/lestInput"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal"
+            android:textSize="@dimen/input_text_size" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Import Campaign -->
+    <Button
+        android:id="@+id/importCampaignButton"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_min_height"
+        android:text="@string/import_campaign"
+        style="@style/Widget.TestGilets.Button.Primary"
+        android:layout_marginTop="@dimen/spacing_large" />
+
+    <TextView
+        android:id="@+id/importStatusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_small"
+        android:textColor="@color/textSecondary"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:visibility="gone" />
+
+    <!-- Back Button -->
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_small_min_height"
+        android:text="Retour"
+        style="@style/Widget.TestGilets.Button.Secondary"
+        android:layout_marginTop="@dimen/spacing_large" />
+
+</LinearLayout>

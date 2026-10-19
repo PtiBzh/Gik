@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TestGilets" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+    </style>
+
+    <style name="Theme.TestGilets.Verdict" parent="Theme.TestGilets">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!-- Text styles for high contrast -->
+    <style name="TextAppearance.TestGilets.Large">
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.TestGilets.Medium">
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="TextAppearance.TestGilets.Small">
+        <item name="android:textSize">@dimen/text_small</item>
+        <item name="android:textColor">@color/textSecondary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Button styles -->
+    <style name="Widget.TestGilets.Button.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/buttonPrimary</item>
+        <item name="android:textColor">@color/colorOnPrimary</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">@dimen/button_min_height</item>
+        <item name="android:minWidth">@dimen/button_min_width</item>
+        <item name="android:padding">@dimen/button_padding</item>
+    </style>
+
+    <style name="Widget.TestGilets.Button.Secondary" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/buttonSecondary</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">@dimen/button_small_min_height</item>
+        <item name="android:minWidth">@dimen/button_min_width</item>
+    </style>
+
+    <style name="Widget.TestGilets.Button.Danger" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/buttonDanger</item>
+        <item name="android:textColor">@color/colorOnError</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">@dimen/button_small_min_height</item>
+    </style>
+
+    <style name="Widget.TestGilets.Button.Success" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/buttonSuccess</item>
+        <item name="android:textColor">@color/textOnLight</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">@dimen/button_min_height</item>
+    </style>
+
+    <!-- Input styles -->
+    <style name="Widget.TestGilets.TextInputLayout">
+        <item name="android:textSize">@dimen/input_text_size</item>
+        <item name="android:hintTextColor">@color/textSecondary</item>
+        <item name="boxBackgroundColor">@color/colorSurface</item>
+        <item name="boxStrokeColor">@color/borderLight</item>
+    </style>
+</resources>
