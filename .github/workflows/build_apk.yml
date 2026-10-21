@@ -29,9 +29,10 @@ jobs:
           unzip -d /opt /tmp/gradle-8.4-bin.zip
           echo "GRADLE_HOME=/opt/gradle-8.4" >> $GITHUB_ENV
           echo "$GRADLE_HOME/bin" >> $GITHUB_PATH
+          gradle --version
 
       - name: Build debug APK
-        run: gradle assembleDebug
+        run: gradle assembleDebug -Pandroid.injected.invoked.from.ide=false
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
 
