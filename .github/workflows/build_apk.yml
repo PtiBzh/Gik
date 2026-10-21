@@ -29,10 +29,15 @@ jobs:
           unzip -d /opt /tmp/gradle-8.4-bin.zip
           echo "GRADLE_HOME=/opt/gradle-8.4" >> $GITHUB_ENV
           echo "$GRADLE_HOME/bin" >> $GITHUB_PATH
-          gradle --version
+
+      - name: Add Google Maven repository
+        run: |
+          mkdir -p ~/.gradle
+          echo "google()" > ~/.gradle/init.gradle
+          echo "mavenCentral()" >> ~/.gradle/init.gradle
 
       - name: Build debug APK
-        run: gradle assembleDebug -Pandroid.injected.invoked.from.ide=false
+        run: gradle assembleDebug -Pandroid.injected.invoked.from.ide=false --no-daemon
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
 
