@@ -33,8 +33,23 @@ jobs:
       - name: Add Google Maven repository
         run: |
           mkdir -p ~/.gradle
-          echo "google()" > ~/.gradle/init.gradle
-          echo "mavenCentral()" >> ~/.gradle/init.gradle
+          cat > ~/.gradle/init.gradle << 'EOF'
+          settingsEvaluated { settings ->
+            settings.pluginManagement {
+              repositories {
+                google {
+                  content {
+                    includeGroupByRegex("com\\.android\\..*")
+                    includeGroupByRegex("com\\.google\\..*")
+                    includeGroupByRegex("androidx\\..*")
+                  }
+                }
+                mavenCentral()
+                gradlePluginPortal()
+              }
+            }
+          }
+          EOF
 
       - name: Build debug APK
         run: gradle assembleDebug -Pandroid.injected.invoked.from.ide=false --no-daemon
