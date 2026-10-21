@@ -23,6 +23,9 @@ jobs:
           cmdline-tools-version: 12266719
           packages: platform-tools build-tools;34.0.0 platforms;android-34
 
+      - name: Generate gradlew
+        run: gradle wrapper --gradle-version 8.4
+
       - name: Make gradlew executable
         run: chmod +x gradlew
 
