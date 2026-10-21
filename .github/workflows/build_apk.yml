@@ -20,8 +20,8 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 34
-          build-tools: 34.0.0
+          cmdline-tools-version: 12266719
+          packages: platform-tools build-tools-34.0.0 android-34
 
       - name: Build debug APK
         run: ./gradlew assembleDebug
