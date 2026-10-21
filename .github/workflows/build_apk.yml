@@ -23,24 +23,17 @@ jobs:
           cmdline-tools-version: 12266719
           packages: platform-tools build-tools;34.0.0 platforms;android-34
 
-      - name: Make gradlew executable
-        run: chmod +x gradle/wrapper/gradle-wrapper.jar
-
-      - name: Create gradlew script
+      - name: Install Gradle 8.4
         run: |
-          cat > gradlew << 'EOF'
-          #!/bin/sh
-          
-          # Resolve the real path of the wrapper script
-          WRAPPER_SCRIPT="$(cd "$(dirname "$0")" && pwd)/gradle/wrapper/gradle-wrapper.jar"
-          
-          # Use Java to run the wrapper
-          exec "$JAVA_HOME/bin/java" -Dorg.gradle.appname=gradlew -classpath "$WRAPPER_SCRIPT" org.gradle.wrapper.GradleWrapperMain "$@"
-          EOF
-          chmod +x gradlew
+          wget https://services.gradle.org/distributions/gradle-8.4-bin.zip -P /tmp
+          unzip -d /opt /tmp/gradle-8.4-bin.zip
+          echo "GRADLE_HOME=/opt/gradle-8.4" >> $GITHUB_ENV
+          echo "$GRADLE_HOME/bin" >> $GITHUB_PATH
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug
+        run: gradle assembleDebug
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
