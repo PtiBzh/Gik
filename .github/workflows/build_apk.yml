@@ -23,38 +23,8 @@ jobs:
           cmdline-tools-version: 12266719
           packages: platform-tools build-tools;34.0.0 platforms;android-34
 
-      - name: Install Gradle 8.4
-        run: |
-          wget https://services.gradle.org/distributions/gradle-8.4-bin.zip -P /tmp
-          unzip -d /opt /tmp/gradle-8.4-bin.zip
-          echo "GRADLE_HOME=/opt/gradle-8.4" >> $GITHUB_ENV
-          echo "$GRADLE_HOME/bin" >> $GITHUB_PATH
-
-      - name: Add Google Maven repository
-        run: |
-          mkdir -p ~/.gradle
-          cat > ~/.gradle/init.gradle << 'EOF'
-          settingsEvaluated { settings ->
-            settings.pluginManagement {
-              repositories {
-                google {
-                  content {
-                    includeGroupByRegex("com\\.android\\..*")
-                    includeGroupByRegex("com\\.google\\..*")
-                    includeGroupByRegex("androidx\\..*")
-                  }
-                }
-                mavenCentral()
-                gradlePluginPortal()
-              }
-            }
-          }
-          EOF
-
       - name: Build debug APK
-        run: gradle assembleDebug -Pandroid.injected.invoked.from.ide=false --no-daemon
-        env:
-          ANDROID_HOME: /usr/local/lib/android/sdk
+        run: ./gradlew assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
