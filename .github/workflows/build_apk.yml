@@ -11,10 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
 
       - name: Set up Android SDK
@@ -23,11 +23,11 @@ jobs:
           cmdline-tools-version: 12266719
           packages: platform-tools build-tools;34.0.0 platforms;android-34
 
-      - name: Install Gradle 7.3.3
+      - name: Install Gradle 6.8
         run: |
-          wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
-          unzip -d /opt /tmp/gradle-7.3.3-bin.zip
-          echo "GRADLE_HOME=/opt/gradle-7.3.3" >> $GITHUB_ENV
+          wget https://services.gradle.org/distributions/gradle-6.8-bin.zip -P /tmp
+          unzip -d /opt /tmp/gradle-6.8-bin.zip
+          echo "GRADLE_HOME=/opt/gradle-6.8" >> $GITHUB_ENV
           echo "$GRADLE_HOME/bin" >> $GITHUB_PATH
 
       - name: Build debug APK
