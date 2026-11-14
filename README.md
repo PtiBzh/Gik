@@ -47,6 +47,20 @@ Conforme au cahier des charges « Scope — Application Android native ».
    et l'archiver (perte = fin des mises à jour pour les installations
    existantes). Sideload APK sur le Core-Z5.
 
+### Installer un APK debug produit par la CI
+
+⚠ **Chaque APK debug de la CI a une signature différente** (clé debug
+éphémère générée sur le runner). Android refuse la mise à jour d'une appli
+par un APK signé autrement — erreur « Appli non installée ». Donc :
+
+1. **Désinstaller** l'appli « Test gilets » déjà présente sur le téléphone ;
+2. l'artefact GitHub est un **`.zip`** : le dézipper, c'est l'APK
+   (`app-debug.apk`) qui s'installe, pas le zip ;
+3. installer l'APK.
+
+Ce problème disparaît avec les APK release : le keystore (secret) est
+stable, les mises à jour s'installent par-dessus la version précédente.
+
 ## Compilation par GitHub (GitHub Actions)
 
 À chaque push sur `main` (ou déclenchement manuel dans l'onglet **Actions**),
@@ -72,6 +86,7 @@ sur la machine de build, jetée après le run.
 Distribution Play Store / F-Droid : possible plus tard, pas pour l'hiver.
 
 ## Structure
+
 
 
 
