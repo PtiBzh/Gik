@@ -8,6 +8,11 @@ on:
 env:
   ANDROID_HOME: /usr/local/lib/android/sdk   # SDK préinstallé du runner
 
+# Les runs en attente se remplacent : seul le dernier push est compilé.
+concurrency:
+  group: build-apk
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
