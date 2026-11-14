@@ -1,42 +1,57 @@
-name: Build Android APK
+name: Build APK
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [main]
+  workflow_dispatch: {}   # déclenchable à la main depuis l'onglet Actions
+
+env:
+  ANDROID_HOME: /usr/local/lib/android/sdk   # SDK préinstallé du runner
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      # JDK 17 requis par AGP 8.x
+      - uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
+          java-version: "17"
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # Installe Gradle 8.7 (le projet n'a pas de wrapper committé)
+      - uses: gradle/actions/setup-gradle@v3
         with:
-          cmdline-tools-version: 12266719
-          packages: platform-tools build-tools;34.0.0 platforms;android-34
-
-      - name: Install Gradle 6.8
-        run: |
-          wget https://services.gradle.org/distributions/gradle-6.8-bin.zip -P /tmp
-          unzip -d /opt /tmp/gradle-6.8-bin.zip
-          echo "GRADLE_HOME=/opt/gradle-6.8" >> $GITHUB_ENV
-          echo "$GRADLE_HOME/bin" >> $GITHUB_PATH
+          gradle-version: "8.7"
 
       - name: Build debug APK
-        run: gradle assembleDebug --no-daemon -Pandroid.injected.invoked.from.ide=false
-        env:
-          ANDROID_HOME: /usr/local/lib/android/sdk
+        run: gradle assembleDebug --no-daemon
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      # APK RELEASE SIGNÉ — uniquement si les secrets du keystore sont définis.
+      # Sinon (premier build avant création du keystore), on saute proprement.
+      - name: Build release APK (si keystore configuré)
+        if: ${{ env.KEYSTORE_B64 != '' }}
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > $HOME/release.keystore
+          export KEYSTORE_FILE=$HOME/release.keystore
+          gradle assembleRelease --no-daemon
+
+      - uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: apk-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('app/build/outputs/apk/release/app-release.apk') != '' }}
+        with:
+          name: apk-release
+          path: app/build/outputs/apk/release/app-release.apk
+          retention-days: 30

@@ -1,225 +1,77 @@
-# Test gilets CNPA
+# Test gilets CNPA — application Android native
 
-Application Android native pour le test des gilets de flottabilité du Club Nautique de Lesconil (CNPA).
+Portage Kotlin natif de la web app « Test gilets CNPA — saisie au bac ».
+Conforme au cahier des charges « Scope — Application Android native ».
 
-## Contexte
+## Contraintes imposées (cahier des charges)
 
-Chaque hiver, environ 230 gilets de flottabilité en mousse sont testés individuellement au bac d'eau par une seule personne, en une session, en conditions humides. Cette application remplace le flux actuel (saisie sur tableau Véléda → photo → retranscription CSV) par une saisie directe sur smartphone Android, hors ligne.
+- `applicationId` : **fr.ydel.gilets** — ne jamais changer.
+- Nom visible : **Test gilets**.
+- **Hors ligne** : aucune permission Internet, aucun Play Services.
+- Scan code-barres : **zxing-android-embedded** (gilets Silh — le code scanné
+  est recherché en correspondance exacte OU comme contenu de la valeur lue ;
+  l'ID club, ex. 55-25, matche aussi).
+- Téléphone de test : **Crosscall Core-Z5** (Android 12, écran 500 nits,
+  tactile mouillé/ganté) → UI très contrastée, gros boutons, jamais
+  d'information portée par la couleur seule (symboles ✓/✗ + mots OK/HS).
+- **Keystore à générer et conserver dès le PREMIER build signé.**
 
-## Fonctionnalités
+## Deux modes de protocole
 
-- **Saisie rapide** : Scan de code-barres ou saisie manuelle du numéro de gilet
-- **Reconnaissance intelligente** : Recherche dans la feuille de campagne embarquée avec normalisation des ID
-- **Calcul automatique** : Calcul de la flottabilité et du verdict selon le mode de mesure
-- **Verdict clair** : Affichage plein écran avec couleur, texte et vibration
-- **Gestion de session** : Liste des tests, export CSV, statistiques
-- **100% hors ligne** : Aucune connexion réseau requise
-- **Mode avion compatible** : Fonctionne entièrement sans réseau
+- **Banc poulie** (défaut) : la lecture peson (kg) EST la flottabilité → N = kg × 9,8.
+- **Ancien protocole** : flottabilité = (Lest − Test) × 9,8, Test = lecture en ×100 g.
+- Boutons **HS sans lecture** : « HS — coule » en mode poulie, « HS — flotte »
+  en ancien → « - » dans la colonne Test, non conforme d'office.
 
-## Prérequis
+## Feuille de campagne
 
-- Android Studio (version 2023.2 ou supérieure)
-- SDK Android 34
-- Java JDK 17
-- Appareil Android avec API 26+ (Android 8+)
+- L'asset `campagne-2026.csv` (231 gilets, feuille pré-remplie 2026) est
+  embarqué par défaut.
+- **L'APK n'est jamais recompilé** : pour la campagne suivante, régénérer la
+  feuille CSV puis l'importer dans l'app (bouton IMPORTER — sélecteur de
+  fichiers SAF). Format : séparateur `;`, UTF-8 avec BOM, colonnes
+  `Modèle;ID canonique;ID club;Test;Lest (×100g);Flotta (N);…`.
 
-## Installation
+## Résultats et export
 
-### 1. Cloner le projet
+- Stockage local (équivalent localStorage) : `filesDir/resultats.json`.
+- Un gilet re-testé remplace sa ligne précédente.
+- EXPORTER écrit le **format exact des campagnes + colonne Horodatage**
+  via « Créer un document » (SAF) — à ouvrir dans le CSV de campagne.
 
-```bash
-git clone https://github.com/PtiBzh/Gik.git
-cd Gik
-```
+## Build
 
-### 2. Configurer le SDK Android
+1. Ouvrir le dossier dans **Android Studio** (Koala ou plus récent).
+2. Laisser Gradle synchroniser (JDK 17 requis).
+3. `Build > Generate Signed Bundle/APK` → **créer le keystore maintenant**
+   et l'archiver (perte = fin des mises à jour pour les installations
+   existantes). Sideload APK sur le Core-Z5.
 
-Assurez-vous d'avoir installé le SDK Android 34 via le SDK Manager d'Android Studio.
+## Compilation par GitHub (GitHub Actions)
 
-### 3. Builder l'APK
+À chaque push sur `main` (ou déclenchement manuel dans l'onglet **Actions**),
+`.github/workflows/build-apk.yml` compile le projet sur une machine GitHub et
+publie l'APK en **artefact téléchargeable** (30 jours de rétention) :
 
-```bash
-# APK de debug
-./gradlew assembleDebug
+- **apk-debug** : toujours produit, installable directement — aucun réglage.
+- **apk-release** : signé, uniquement si les secrets du dépôt sont définis.
 
-# APK de release
-./gradlew assembleRelease
-```
+Mise en place de la signature release (une seule fois) :
 
-L'APK sera générée dans `app/build/outputs/apk/`.
+1. Générer le keystore **et le conserver hors du dépôt** (perte = pas de
+   mise à jour possible pour les APK déjà installés) :
+   `keytool -genkey -v -keystore test-gilets.keystore -alias gilets -keyalg RSA -keysize 2048 -validity 10000`
+2. Dans Settings > Secrets and variables > Actions du dépôt, ajouter :
+   - `KEYSTORE_B64` : `base64 -w0 test-gilets.keystore` (le keystore encodé)
+   - `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`
+3. Pousser : l'APK signé apparaît en artefact du run.
 
-### 4. Installer sur un appareil
+Note : le keystore ne transite jamais en clair ; il est décodé uniquement
+sur la machine de build, jetée après le run.
 
-```bash
-# Installer l'APK debug
-adb install app/build/outputs/apk/debug/app-debug.apk
-```
+Distribution Play Store / F-Droid : possible plus tard, pas pour l'hiver.
 
-## Structure du projet
+## Structure
 
-```
-app/
-├── src/
-│   ├── main/
-│   │   ├── java/fr/ydel/gilets/
-│   │   │   ├── data/           # Modèles et accès aux données
-│   │   │   ├── ui/             # Activités et adaptateurs
-│   │   │   ├── util/           # Classes utilitaires
-│   │   │   ├── viewmodel/      # ViewModels
-│   │   │   └── TestGiletsApp.kt # Application
-│   │   ├── res/               # Ressources
-│   │   │   ├── layout/         # Layouts XML
-│   │   │   ├── values/         # Strings, colors, styles
-│   │   │   └── assets/         # Fichiers d'actifs (CSV)
-│   │   └── AndroidManifest.xml
-│   └── test/                  # Tests unitaires
-└── build.gradle.kts            # Configuration Gradle
-```
 
-## Fichier de campagne
 
-### Format CSV
-
-Le fichier de campagne doit être au format CSV avec les colonnes suivantes (séparateur `;`):
-
-```csv
-Modèle;ID canonique;ID club;Test;Lest;Flotta (N);Constat
-Gilet Adulte;FAB001;23-001;;;200,0;
-Gilet Adulte;FAB002;23-002;;;200,0;
-```
-
-**Colonnes:**
-1. Modèle : Nom du modèle de gilet
-2. ID canonique : Identifiant fabricant
-3. ID club : Identifiant interne du club (ex: "23-001")
-4. Test : (optionnel) Information de test
-5. Lest : (optionnel) Valeur du lest en kg
-6. **Flotta (N)** : **Seuil de flottabilité nominale en Newtons** (requis)
-7. Constat : (optionnel) Constat initial
-
-### Intégration par défaut
-
-Le fichier `campagne-gilets-2026.csv` est intégré en tant qu'asset. Pour le mettre à jour:
-
-1. Placer le fichier CSV dans `app/src/main/assets/`
-2. Rebuild l'application
-
-### Import à chaud
-
-Depuis l'écran des réglages, vous pouvez importer un nouveau fichier de campagne via le sélecteur de fichiers Android. Les tests déjà enregistrés dans la session sont conservés.
-
-## Modes de mesure
-
-### Banc poulie (défaut)
-La flottabilité est lue directement :
-```
-Flottabilité (N) = lecture_kg × 9,8
-```
-
-### Ancien protocole
-La flottabilité est calculée à partir du lest :
-```
-Flottabilité (N) = (lest_kg − lecture_kg) × 9,8
-```
-
-## Verdicts
-
-- **Conforme** : flottabilité ≥ seuil nominal
-- **Non conforme (flottabilité)** : flottabilité < seuil nominal
-- **Non conforme (visuel)** : détection visuelle sans mesure
-- **À vérifier (seuil inconnu)** : gilet hors liste sans seuil manuel
-
-## Export CSV
-
-Le format d'export respect les colonnes des campagnes :
-
-```csv
-Modèle;ID canonique;ID club;Test (Visu ou ×100g);Lest (×100g);Flotta (N);Flotta évaluée N;Δ (N);Constat;Horodatage
-```
-
-- `Test` : lecture en hectogrammes (kg × 100, arrondi) ou `-` si sans lecture
-- `Lest` : 110 (hectogrammes) en mode ancien, vide en mode poulie
-- `Flotta évaluée N` : flottabilité calculée
-- `Δ (N)` : différence par rapport au seuil
-- `Horodatage` : format `AAAA-MM-JJ hh:mm:ss`
-
-## Configuration
-
-### Identifiant d'application
-- **ID** : `fr.ydel.gilets`
-- **Nom** : "Test gilets"
-
-### Permissions
-- `CAMERA` : Pour le scan des codes-barres
-- `VIBRATE` : Pour les retours haptiques
-
-### Keystore de release
-
-Pour générer un keystore de release :
-
-```bash
-keytool -genkey -v -keystore release.keystore -alias gilets -keyalg RSA -keysize 2048 -validity 10000
-```
-
-Placer le fichier `release.keystore` dans le répertoire `app/` et configurer le `app/build.gradle.kts` :
-
-```kotlin
-android {
-    signingConfigs {
-        release {
-            storeFile = file("release.keystore")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = "gilets"
-            keyPassword = System.getenv("KEY_PASSWORD")
-        }
-    }
-    buildTypes {
-        release {
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
-}
-```
-
-## Tests
-
-Exécuter les tests unitaires :
-
-```bash
-./gradlew test
-```
-
-Les tests couvrent :
-- Calcul des verdicts selon les règles métier
-- Parsing et validation du CSV
-- Export CSV
-- Normalisation des ID
-
-## Compatibilité
-
-- **Min SDK** : Android 8 (API 26)
-- **Target SDK** : Android 14 (API 34)
-- **Appareil testé** : Crosscall Core-Z5 (Android 12-14)
-
-## Contribution
-
-Le projet est FOSS-ready. Pour contribuer :
-
-1. Forker le dépôt
-2. Créer une branche de fonctionnalité
-3. Commiter vos modifications
-4. Ouvrir une Pull Request
-
-## Licence
-
-Le projet utilise des dépendances libres (Apache-2.0, MIT). Le code est prêt pour une publication sur F-Droid.
-
-## Auteurs
-
-Développé pour le Club Nautique de Lesconil (CNPA).
-
-## Remerciements
-
-- zxing-android-embedded pour le scan de codes-barres
-- Android Jetpack pour l'architecture
-- Room pour la persistance locale
