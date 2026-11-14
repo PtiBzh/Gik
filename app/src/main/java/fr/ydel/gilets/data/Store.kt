@@ -20,7 +20,7 @@ class Store(context: Context) {
     /** Feuille active : CSV importé s'il existe, sinon l'asset embarqué. */
     fun chargerFeuilleDefaut(context: Context): String =
         if (fichierFeuille.exists()) fichierFeuille.readText()
-        else context.assets.open("campagne-2026.csv").bufferedReader().use(BufferedReader::readText)
+        else context.assets.open("campagne-2026.csv").bufferedReader().use { it.readText() }
 
     fun enregistrerFeuilleImportee(csv: String) { fichierFeuille.writeText(csv) }
 
