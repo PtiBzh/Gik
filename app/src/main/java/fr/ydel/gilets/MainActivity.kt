@@ -21,7 +21,9 @@ import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import fr.ydel.gilets.data.*
 import fr.ydel.gilets.ui.*
+import android.util.Log
 import java.io.File
+import kotlin.system.exitProcess
 
 /**
  * Test gilets CNPA — saisie au bac. Portage Kotlin natif de la web app.
@@ -29,8 +31,28 @@ import java.io.File
  */
 class MainActivity : ComponentActivity() {
 
+    private lateinit var crashLog: File
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Diagnostique : toute exception non interceptée est écrite dans un
+        // fichier, puis affichée à l'écran au démarrage suivant.
+        crashLog = File(filesDir, "crash-log.txt")
+        val defaut = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            runCatching {
+                crashLog.writeText(
+                    "=== CRASH ${java.util.Date()} — thread ${t.name} ===\n" +
+                    Log.getStackTraceString(e)
+                )
+                // Copie accessible par USB (MTP) en plus du stockage interne.
+                getExternalFilesDir(null)?.let {
+                    runCatching { File(it, "crash-log.txt").writeText(Log.getStackTraceString(e)) }
+                }
+            }
+            defaut?.uncaughtException(t, e)
+            exitProcess(10)
+        }
         setContent { App() }
     }
 
@@ -48,6 +70,9 @@ class MainActivity : ComponentActivity() {
         var lecture by remember { mutableStateOf("") }
         var verdictAffiche by remember { mutableStateOf<Resultat?>(null) }
         var message by remember { mutableStateOf<String?>(null) }
+        var crashText by remember {
+            mutableStateOf(runCatching { File(filesDir, "crash-log.txt").readText() }.getOrDefault(""))
+        }
 
         // Chargement initial : feuille importée sinon asset 2026 embarqué.
         LaunchedEffect(Unit) { gilets = Csv.parse(store.chargerFeuilleDefaut(context)) }
@@ -202,6 +227,17 @@ class MainActivity : ComponentActivity() {
                     Text(it, color = ACCENT, fontSize = 15.sp)
                 }
 
+                if (crashText.isNotEmpty()) {
+                    Text(
+                        "⚠ DERNIER CRASH — copie ce texte à Vibe :\n$crashText",
+                        color = HS_TEXTE, fontSize = 12.sp,
+                    )
+                    BoutonGeant("EFFACER LE RAPPORT DE CRASH", {
+                        runCatching { File(filesDir, "crash-log.txt").delete() }
+                        crashText = ""
+                    }, texteCouleur = TEXTE_ATTENU)
+                }
+
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     BoutonGeant("IMPORTER\nFEUILLE CSV", { importCsv.launch(arrayOf("text/csv", "text/comma-separated-values", "application/vnd.ms-excel")) }, modifier = Modifier.weight(1f))
                     BoutonGeant("EXPORTER\nRÉSULTATS CSV", { exportCsv.launch("campagne-gilets-resultats.csv") }, modifier = Modifier.weight(1f))
@@ -220,5 +256,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 
